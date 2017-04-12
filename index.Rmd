@@ -1,7 +1,7 @@
 ---
 title: "Leaflet Demo"
 author: "A. J. R"
-date: "April 2017"
+date: "12 April 2017"
 output: html_document
 ---
 
@@ -9,9 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Date today
+## Date
+Creation Date: 12.04.2017
 <p>
-<script> document.write(new Date().toLocaleDateString()); </script>
+Current Date: <script> document.write(new Date().toLocaleDateString()); </script>
 </p>
 
 
@@ -42,11 +43,11 @@ sp_popup <- sprintf("<b>%s</b><br/>Population: %s", sp_shp_p$NAMEUNIT, sp_shp_p$
 leaflet(data = sp_shp_p) %>%
 setView(lat=40.4165000, lng= -3.7025600, zoom = 6) %>%
 addPolygons(fillColor= ~pal(POB), color="000", weight= 2,
-popup=sp_popup, opacity = 1, highlight = highlightOptions(
+popup=sp_popup, fillOpacity = 0.8, highlight = highlightOptions(
       weight = 5,
       color = "#666",
       dashArray = "",
-      fillOpacity = 0.7,
+      fillOpacity = 0.6,
       bringToFront = TRUE)) %>%
 addTiles() %>%
 addLegend("bottomright", pal=pal, values = ~POB,
