@@ -1,0 +1,54 @@
+---
+title: "Leaflet Demo"
+author: "A. J. R"
+date: "April 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Date today
+<p>
+<script> document.write(new Date().toLocaleDateString()); </script>
+</p>
+
+
+## A Map of Spain with leaflet and r
+I use the map of spain with the limits of its Autonomous Communities. The shape-file of this Communities can be downloaded from: http://centrodedescargas.cnig.es/CentroDescargas/equipamiento.do?method=mostrarEquipamiento 
+
+The Communities are colored following their absolute population, by clicking a communitie, a popup appears with the name and the population.
+
+Map of Spain with its Comunidades Autonomas and the population:
+
+```{r}
+library(leaflet)
+library(rgdal)
+library(raster)
+#Loading the shape file of the comunities
+sp_shp <- shapefile("recintos_autonomicas_inspire_peninbal_etrs89.shp")
+#The population of the communities in 2016 (from http://www.ine.es/jaxiT3/Tabla.htm?t=2915)
+pob <- c(86026, 84519, 315794, 2189534, 640647, 146487, 6466996, 2718525, 1087778, 4959968, 7522596, 2041631,2447519, 582206, 1107220, 1042608, 1308563, 8388107)
+#Adding Population to the shapefile
+sp_pob <- data.frame(sp_shp$CODNUT2, pob)
+colnames(sp_pob) <- c("CODNUT2", "POB")
+sp_shp_p <- merge(sp_shp, sp_pob, by_x="CODNUT2", by_y="CODNUT2")
+#define color palet for the polygon coloring
+pal <- colorNumeric("OrRd", domain = sp_shp_p$POB)
+#define the names for each polygon
+sp_popup <- sprintf("<b>%s</b><br/>Population: %s", sp_shp_p$NAMEUNIT, sp_shp_p$POB)
+#bulid up the leaflet display
+leaflet(data = sp_shp_p) %>%
+setView(lat=40.4165000, lng= -3.7025600, zoom = 6) %>%
+addPolygons(fillColor= ~pal(POB), color="000", weight= 2,
+popup=sp_popup, opacity = 1, highlight = highlightOptions(
+      weight = 5,
+      color = "#666",
+      dashArray = "",
+      fillOpacity = 0.7,
+      bringToFront = TRUE)) %>%
+addTiles() %>%
+addLegend("bottomright", pal=pal, values = ~POB,
+title = "Legend", opacity = 0.7)
+```
